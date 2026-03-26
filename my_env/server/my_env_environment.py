@@ -9,7 +9,7 @@ app = FastAPI()
 class MyEnv:
     def __init__(self):
         self.current_task = None
-        self.done = False
+        self.done = False 
 
     def reset(self, task_id=1):
         self.current_task = TASKS[task_id - 1]
@@ -39,6 +39,10 @@ class MyEnv:
 
 
 env = MyEnv()
+
+@app.get("/")
+def home():
+    return {"message": "Server running 🚀"}
 
 @app.get("/reset")
 def reset(task_id: int = 1):
