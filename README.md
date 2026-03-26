@@ -1,3 +1,14 @@
+
+---
+title: openenv-ticket-routing-ai
+emoji: 🤖
+colorFrom: blue
+colorTo: purple
+sdk: docker
+app_port: 7860
+pinned: false
+---
+
 # 🚀 Ticket Routing Environment (OpenEnv)
 
 ## 📌 1. Overview
