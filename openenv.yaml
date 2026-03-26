@@ -1,0 +1,23 @@
+name: ticket-routing-env
+description: AI customer support ticket routing simulation
+version: 1.0
+author: Utkarsh Thakur
+
+actions:
+  category: string
+  priority: string
+  response: string
+  escalate: boolean
+
+observations:
+  ticket_id: int
+  message: string
+  history: string
+
+reward:
+  type: float
+
+entrypoint: my_env.server.my_env_environment:MyEnv
+
+tasks:
+  - my_env.tasks.TASKS
