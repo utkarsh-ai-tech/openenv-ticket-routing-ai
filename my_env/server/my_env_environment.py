@@ -60,21 +60,25 @@ def home():
 
             /* 🌊 WAVE BACKGROUND */
             .wave {
-                position: absolute;
+                position: fixed;
+                top: 0;
+                left: 0;
                 width: 200%;
                 height: 200%;
-                background: radial-gradient(circle at 50% 50%, rgba(56,189,248,0.15), transparent);
-                animation: waveMove 8s linear infinite;
+                background: radial-gradient(circle at 50% 50%, rgba(56,189,248,0.25), transparent 60%);
+                animation: waveMove 10s linear infinite;
+                z-index: 0;
             }
 
             @keyframes waveMove {
-                0% { transform: translate(-25%, -25%); }
-                50% { transform: translate(-20%, -30%); }
-                100% { transform: translate(-25%, -25%); }
+                0% { transform: translate(-25%, -25%) rotate(0deg); }
+                50% { transform: translate(-20%, -30%) rotate(180deg); }
+                100% { transform: translate(-25%, -25%) rotate(360deg); }
             }
 
             .container {
                 position: relative;
+                z-index: 1;   /* 🔥 MOST IMPORTANT FIX */
                 text-align: center;
                 padding: 80px 20px;
             }
@@ -134,9 +138,12 @@ def home():
 
     <body>
 
+        <!-- 🌊 WAVE -->
         <div class="wave"></div>
 
+        <!-- MAIN CONTENT -->
         <div class="container">
+
             <h1>🚀 OpenEnv Ticket Routing AI</h1>
             <p>AI-powered customer support simulation</p>
 
@@ -166,6 +173,7 @@ def home():
                 </div>
 
             </div>
+
         </div>
 
     </body>
@@ -312,25 +320,96 @@ def health():
     </html>
     """
 
-@app.get("/run-demo")
+@app.get("/run-demo", response_class=HTMLResponse)
 def run_demo():
+    import random
+
     results = []
 
     for i in range(1, 4):
-        env.reset(i)
+        obs = env.reset(i)
 
         action = Action(
-            category="billing",
-            priority="medium",
-            response="We are checking your issue.",
-            escalate=False
+            category=random.choice(["billing","tech","complaint"]),
+            priority=random.choice(["low","medium","high"]),
+            response="We are processing your request...",
+            escalate=random.choice([True, False])
         )
 
         _, _, _, info = env.step(action)
 
         results.append({
             "task_id": i,
-            "score": info["score"]
+            "score": round(info["score"], 2)
         })
 
-    return {"demo_results": results}
+    avg = round(sum(r["score"] for r in results)/len(results), 2)
+
+    # 🎯 Cards HTML
+    cards = ""
+    for r in results:
+        cards += f"""
+        <div class="card">
+            <h3>Task {r['task_id']}</h3>
+            <p>Score: {r['score']}</p>
+        </div>
+        """
+
+    return f"""
+    <html>
+    <head>
+        <style>
+            body {{
+                background: linear-gradient(135deg,#020617,#0f172a);
+                color: white;
+                font-family: sans-serif;
+                text-align: center;
+                padding: 50px;
+            }}
+
+            h1 {{
+                color: #38bdf8;
+            }}
+
+            .cards {{
+                display: flex;
+                justify-content: center;
+                gap: 20px;
+                margin-top: 40px;
+                flex-wrap: wrap;
+            }}
+
+            .card {{
+                background: rgba(255,255,255,0.05);
+                padding: 20px;
+                border-radius: 12px;
+                width: 200px;
+                transition: 0.3s;
+            }}
+
+            .card:hover {{
+                transform: translateY(-8px);
+            }}
+
+            a {{
+                color: #38bdf8;
+                display: inline-block;
+                margin-top: 30px;
+            }}
+        </style>
+    </head>
+
+    <body>
+
+        <h1>🚀 Demo Results</h1>
+        <h2>Average Score: {avg}</h2>
+
+        <div class="cards">
+            {cards}
+        </div>
+
+        <a href="/">⬅ Back to Home</a>
+
+    </body>
+    </html>
+    """
