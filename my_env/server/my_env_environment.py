@@ -42,8 +42,6 @@ env = MyEnv()
 
 from fastapi.responses import HTMLResponse
 
-from fastapi.responses import HTMLResponse
-
 @app.get("/", response_class=HTMLResponse)
 def home():
     return """
@@ -53,91 +51,90 @@ def home():
         <style>
             body {
                 margin: 0;
-                font-family: 'Segoe UI', sans-serif;
-                background: linear-gradient(135deg, #0f172a, #1e293b);
+                font-family: 'Segoe UI';
+                background: linear-gradient(-45deg, #020617, #0f172a, #1e293b, #020617);
+                background-size: 400% 400%;
+                animation: bg 10s ease infinite;
                 color: white;
                 text-align: center;
+                padding: 80px;
             }
-            .container {
-                padding: 50px;
+
+            @keyframes bg {
+                0%{background-position:0% 50%;}
+                50%{background-position:100% 50%;}
+                100%{background-position:0% 50%;}
             }
+
             h1 {
-                font-size: 45px;
+                font-size: 50px;
                 color: #38bdf8;
-                margin-bottom: 10px;
+                animation: fade 1.5s ease;
             }
+
             p {
-                font-size: 18px;
-                color: #cbd5f5;
+                color: #94a3b8;
+                margin-bottom: 40px;
             }
-            .card {
-                margin: 30px auto;
-                padding: 25px;
-                width: 60%;
-                background: #1e293b;
-                border-radius: 15px;
-                box-shadow: 0px 10px 30px rgba(0,0,0,0.5);
-                transition: transform 0.3s;
+
+            @keyframes fade {
+                from {opacity:0; transform:translateY(20px);}
+                to {opacity:1; transform:translateY(0);}
             }
-            .card:hover {
-                transform: scale(1.05);
-            }
-            a {
+
+            .btn {
                 display: inline-block;
                 margin: 10px;
-                padding: 12px 20px;
-                background: #38bdf8;
-                color: black;
+                padding: 14px 22px;
+                border-radius: 10px;
+                background: rgba(56,189,248,0.2);
+                border: 1px solid #38bdf8;
+                color: #38bdf8;
                 text-decoration: none;
-                border-radius: 8px;
-                font-weight: bold;
                 transition: 0.3s;
             }
-            a:hover {
-                background: #0ea5e9;
-                transform: scale(1.1);
+
+            .btn:hover {
+                transform: translateY(-5px);
+                box-shadow: 0 0 20px #38bdf8;
             }
-            .footer {
-                margin-top: 40px;
-                font-size: 14px;
-                color: #94a3b8;
+
+            .card {
+                display: inline-block;
+                margin: 15px;
+                padding: 20px;
+                width: 250px;
+                border-radius: 15px;
+                background: rgba(255,255,255,0.05);
+                backdrop-filter: blur(10px);
+                transition: 0.4s;
+            }
+
+            .card:hover {
+                transform: scale(1.05);
+                box-shadow: 0 10px 30px rgba(0,0,0,0.5);
             }
         </style>
     </head>
 
     <body>
-        <div class="container">
-            <h1>🚀 OpenEnv Ticket Routing AI</h1>
-            <p>Real-world AI Customer Support Simulation Environment</p>
 
-            <div class="card">
-                <h2>📘 Explore API</h2>
-                <a href="/docs">API Docs</a>
-                <a href="/tasks">View Tasks</a>
-                <a href="/baseline">Baseline Score</a>
-                <a href="/health">Health Check</a>
-            </div>
+        <h1>🚀 OpenEnv Ticket Routing AI</h1>
+        <p>AI-powered customer support simulation environment</p>
 
-            <div class="card">
-                <h2>🧠 Features</h2>
-                <p>✔ Multi-task environment (Easy → Hard)</p>
-                <p>✔ Intelligent reward system</p>
-                <p>✔ Real-world ticket classification</p>
-                <p>✔ OpenEnv compatible API</p>
-            </div>
-
-            <div class="card">
-                <h2>⚡ Quick Start</h2>
-                <p>1. Go to API Docs</p>
-                <p>2. Run /reset</p>
-                <p>3. Try /step</p>
-                <p>4. Check reward & score</p>
-            </div>
-
-            <div class="footer">
-                Built with ❤️ by Utkarsh | OpenEnv Hackathon 🚀
-            </div>
+        <div>
+            <a class="btn" href="/docs">API Docs</a>
+            <a class="btn" href="/tasks">Tasks</a>
+            <a class="btn" href="/baseline">Baseline</a>
+            <a class="btn" href="/health">Health</a>
         </div>
+
+        <br><br>
+
+        <div class="card">📌 Real-world Tasks</div>
+        <div class="card">⚡ Smart Rewards</div>
+        <div class="card">🤖 AI Ready</div>
+
     </body>
     </html>
     """
