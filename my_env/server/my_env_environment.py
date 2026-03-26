@@ -40,9 +40,29 @@ class MyEnv:
 
 env = MyEnv()
 
-@app.get("/")
+from fastapi.responses import HTMLResponse
+
+@app.get("/", response_class=HTMLResponse)
 def home():
-    return {"message": "Server running 🚀"}
+    return """
+    <html>
+        <head>
+            <title>OpenEnv Ticket Routing AI</title>
+        </head>
+        <body style="background:black; color:white; text-align:center; padding:50px;">
+            <h1>🚀 OpenEnv Ticket Routing AI</h1>
+            <p>Real-world AI customer support simulation</p>
+
+            <h2>🔗 Links</h2>
+            <a href="/docs">👉 API Docs</a><br><br>
+            <a href="/tasks">👉 View Tasks</a><br><br>
+            <a href="/baseline">👉 Baseline Score</a><br><br>
+            <a href="/health">👉 Health Check</a>
+
+            <p style="margin-top:40px;">Built by Utkarsh 😎</p>
+        </body>
+    </html>
+    """
 
 @app.get("/reset")
 def reset(task_id: int = 1):
