@@ -122,9 +122,3 @@ http://127.0.0.1:8000/docs
 
 ---
 
-## ✨ Advanced Features
-- Intelligent baseline agent (rule-based NLP)
-- Multi-step interaction environment
-- Reward shaping with penalties and bonuses
-- Multi-intent hard tasks
-- Conversation history tracking
