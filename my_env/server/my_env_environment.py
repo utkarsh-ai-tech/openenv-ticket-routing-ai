@@ -260,7 +260,7 @@ def home():
 
             <!-- ✨ FOOTER -->
             <div class="footer">
-                🚀 Built with passion by <b>Utkarsh Thakur</b>
+                🚀 Built with passion by <b>Utkarsh</b>
             </div>
 
         </div>
