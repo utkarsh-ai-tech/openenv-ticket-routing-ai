@@ -107,24 +107,167 @@ def base_html(content):
 # ================= HOMEPAGE =================
 @app.get("/", response_class=HTMLResponse)
 def home():
-    return base_html("""
-        <h1>🚀 OpenEnv Ticket Routing AI</h1>
-        <p>AI-powered customer support simulation</p>
+    return """
+    <html>
+    <head>
+        <title>OpenEnv Ticket Routing AI</title>
 
-        <div>
-            <a href="/docs">Docs</a> |
-            <a href="/tasks">Tasks</a> |
-            <a href="/baseline">Baseline</a> |
-            <a href="/health">Health</a> |
-            <a href="/run-demo">Run Demo</a>
+        <style>
+            body {
+                margin: 0;
+                font-family: 'Segoe UI', sans-serif;
+                background: linear-gradient(135deg, #020617, #0f172a);
+                color: white;
+                overflow: hidden;
+            }
+
+            /* 🌊 MULTI-LAYER WAVE */
+            .wave, .wave2 {
+                position: fixed;
+                width: 200%;
+                height: 200%;
+                background: radial-gradient(circle, rgba(56,189,248,0.2), transparent 60%);
+                animation: waveMove 12s linear infinite;
+                z-index: 0;
+            }
+
+            .wave2 {
+                animation-duration: 18s;
+                opacity: 0.5;
+            }
+
+            @keyframes waveMove {
+                0% { transform: translate(-25%, -25%) rotate(0deg); }
+                50% { transform: translate(-20%, -30%) rotate(180deg); }
+                100% { transform: translate(-25%, -25%) rotate(360deg); }
+            }
+
+            .container {
+                position: relative;
+                z-index: 1;
+                text-align: center;
+                padding: 80px 20px;
+            }
+
+            h1 {
+                font-size: 50px;
+                color: #38bdf8;
+                text-shadow: 0 0 20px rgba(56,189,248,0.7);
+            }
+
+            p {
+                color: #94a3b8;
+                margin-bottom: 30px;
+            }
+
+            /* 🔘 BUTTONS */
+            .buttons a {
+                display: inline-block;
+                margin: 10px;
+                padding: 12px 22px;
+                background: rgba(56,189,248,0.1);
+                color: #38bdf8;
+                border: 1px solid #38bdf8;
+                border-radius: 10px;
+                text-decoration: none;
+                transition: 0.3s;
+            }
+
+            .buttons a:hover {
+                background: #38bdf8;
+                color: black;
+                transform: translateY(-4px);
+                box-shadow: 0 0 15px #38bdf8;
+            }
+
+            /* 🧊 CARDS */
+            .cards {
+                display: flex;
+                justify-content: center;
+                flex-wrap: wrap;
+                gap: 20px;
+                margin-top: 50px;
+            }
+
+            .card {
+                width: 260px;
+                padding: 20px;
+                border-radius: 15px;
+                background: rgba(255,255,255,0.05);
+                backdrop-filter: blur(10px);
+                box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+                transition: 0.4s;
+            }
+
+            .card:hover {
+                transform: translateY(-10px) scale(1.05);
+                box-shadow: 0 0 25px rgba(56,189,248,0.5);
+            }
+
+            .card h3 {
+                color: #38bdf8;
+            }
+
+            /* ✨ FOOTER */
+            .footer {
+                margin-top: 60px;
+                font-size: 14px;
+                color: #94a3b8;
+                opacity: 0.8;
+            }
+        </style>
+    </head>
+
+    <body>
+
+        <!-- 🌊 BACKGROUND -->
+        <div class="wave"></div>
+        <div class="wave2"></div>
+
+        <div class="container">
+
+            <h1>🚀 OpenEnv Ticket Routing AI</h1>
+            <p>AI-powered customer support simulation with smart routing</p>
+
+            <!-- 🔘 NAV BUTTONS WITH ICONS -->
+            <div class="buttons">
+                <a href="/docs">📄 API Docs</a>
+                <a href="/tasks">📋 Tasks</a>
+                <a href="/baseline">📊 Baseline</a>
+                <a href="/health">💚 Health</a>
+                <a href="/run-demo">⚡ Run Demo</a>
+            </div>
+
+            <!-- 🧊 CARDS -->
+            <div class="cards">
+
+                <div class="card">
+                    <h3>⚙️ System Status</h3>
+                    <p>Check API health and performance instantly.</p>
+                </div>
+
+                <div class="card">
+                    <h3>📋 Smart Tasks</h3>
+                    <p>Real-world support tickets with difficulty levels.</p>
+                </div>
+
+                <div class="card">
+                    <h3>🤖 AI Engine</h3>
+                    <p>Scoring, routing, and automated evaluation.</p>
+                </div>
+
+            </div>
+
+            <!-- ✨ FOOTER -->
+            <div class="footer">
+                🚀 Built with passion by <b>Utkarsh Thakur</b>
+            </div>
+
         </div>
 
-        <br>
-
-        <div class="card"><h3>⚙️ System</h3><p>Health + API</p></div>
-        <div class="card"><h3>📋 Tasks</h3><p>3 difficulty levels</p></div>
-        <div class="card"><h3>🤖 AI</h3><p>Scoring system</p></div>
-    """)
+    </body>
+    </html>
+    """
 
 # ================= HEALTH =================
 @app.get("/health", response_class=HTMLResponse)
