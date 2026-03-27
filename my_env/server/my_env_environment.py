@@ -111,6 +111,7 @@ def home():
     <html>
     <head>
         <title>OpenEnv Ticket Routing AI</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
         <style>
             body {
@@ -118,7 +119,8 @@ def home():
                 font-family: 'Segoe UI', sans-serif;
                 background: linear-gradient(135deg, #020617, #0f172a);
                 color: white;
-                overflow: hidden;
+                overflow-x: hidden;
+                overflow-y: auto;
             }
 
             /* 🌊 MULTI-LAYER WAVE */
