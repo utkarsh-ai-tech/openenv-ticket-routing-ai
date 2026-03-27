@@ -138,6 +138,16 @@ def home():
                 opacity: 0.5;
             }
 
+            .wave3 {
+                position: fixed;
+                width: 200%;
+                height: 200%;
+                background: radial-gradient(circle, rgba(56,189,248,0.15), transparent 60%);
+                animation: waveMove 22s linear infinite;
+                opacity: 0.4;
+               z-index: 0;
+            }
+
             @keyframes waveMove {
                 0% { transform: translate(-25%, -25%) rotate(0deg); }
                 50% { transform: translate(-20%, -30%) rotate(180deg); }
@@ -225,6 +235,7 @@ def home():
         <!-- 🌊 BACKGROUND -->
         <div class="wave"></div>
         <div class="wave2"></div>
+        <div class="wave3"></div>
 
         <div class="container">
 
