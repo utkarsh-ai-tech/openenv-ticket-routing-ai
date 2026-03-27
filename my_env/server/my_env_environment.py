@@ -4,13 +4,15 @@ from my_env.models import Action, Observation
 from my_env.tasks import TASKS
 from my_env.grader import grade
 from my_env.reward import compute_reward
+import random
 
 app = FastAPI()
 
+# ================= ENV =================
 class MyEnv:
     def __init__(self):
         self.current_task = None
-        self.done = False 
+        self.done = False
 
     def reset(self, task_id=1):
         self.current_task = TASKS[task_id - 1]
@@ -22,12 +24,9 @@ class MyEnv:
 
     def step(self, action: Action):
         expected = self.current_task["expected"]
-
         score = grade(action, expected)
         reward = compute_reward(score)
-
         self.done = True
-
         return (
             Observation(ticket_id=self.current_task["id"], message="Processed"),
             reward,
@@ -38,378 +37,185 @@ class MyEnv:
     def state(self):
         return self.current_task
 
-
 env = MyEnv()
 
-
-@app.get("/", response_class=HTMLResponse)
-def home():
-    return """
-    <html>
-    <head>
-        <title>OpenEnv Ticket Routing AI</title>
-
-        <style>
-            body {
-                margin: 0;
-                font-family: 'Segoe UI', sans-serif;
-                background: linear-gradient(135deg, #020617, #0f172a);
-                color: white;
-                overflow-x: hidden;
-            }
-
-            /* 🌊 WAVE BACKGROUND */
-            .wave {
-                position: fixed;
-                top: 0;
-                left: 0;
-                width: 200%;
-                height: 200%;
-                background: radial-gradient(circle at 50% 50%, rgba(56,189,248,0.25), transparent 60%);
-                animation: waveMove 10s linear infinite;
-                z-index: 0;
-            }
-
-            @keyframes waveMove {
-                0% { transform: translate(-25%, -25%) rotate(0deg); }
-                50% { transform: translate(-20%, -30%) rotate(180deg); }
-                100% { transform: translate(-25%, -25%) rotate(360deg); }
-            }
-
-            .container {
-                position: relative;
-                z-index: 1;   /* 🔥 MOST IMPORTANT FIX */
-                text-align: center;
-                padding: 80px 20px;
-            }
-
-            h1 {
-                font-size: 50px;
-                color: #38bdf8;
-            }
-
-            p {
-                color: #94a3b8;
-            }
-
-            .buttons a {
-                margin: 10px;
-                padding: 12px 20px;
-                background: #38bdf8;
-                color: black;
-                border-radius: 8px;
-                text-decoration: none;
-                transition: 0.3s;
-            }
-
-            .buttons a:hover {
-                background: #0ea5e9;
-                transform: translateY(-3px);
-            }
-
-            /* 🧊 CARDS */
-            .cards {
-                display: flex;
-                justify-content: center;
-                flex-wrap: wrap;
-                margin-top: 50px;
-                gap: 20px;
-            }
-
-            .card {
-                width: 260px;
-                padding: 20px;
-                border-radius: 15px;
-                background: rgba(255,255,255,0.05);
-                backdrop-filter: blur(10px);
-                box-shadow: 0 10px 30px rgba(0,0,0,0.4);
-                transition: 0.4s;
-            }
-
-            .card:hover {
-                transform: translateY(-10px);
-            }
-
-            .card h3 {
-                color: #38bdf8;
-            }
-        </style>
-    </head>
-
-    <body>
-
-        <!-- 🌊 WAVE -->
-        <div class="wave"></div>
-
-        <!-- MAIN CONTENT -->
-        <div class="container">
-
-            <h1>🚀 OpenEnv Ticket Routing AI</h1>
-            <p>AI-powered customer support simulation</p>
-
-            <div class="buttons">
-                <a href="/docs">API Docs</a>
-                <a href="/tasks">Tasks</a>
-                <a href="/baseline">Baseline</a>
-                <a href="/health">Health</a>
-                <a href="/run-demo">Run Demo</a>
-            </div>
-
-            <div class="cards">
-
-                <div class="card">
-                    <h3>⚙️ System Status</h3>
-                    <p>Check API health, baseline score and system performance.</p>
-                </div>
-
-                <div class="card">
-                    <h3>📋 Tasks</h3>
-                    <p>Explore real-world customer support tickets with difficulty levels.</p>
-                </div>
-
-                <div class="card">
-                    <h3>🤖 AI Features</h3>
-                    <p>Supports RL agents, scoring system and automated evaluation.</p>
-                </div>
-
-            </div>
-
-        </div>
-
-    </body>
-    </html>
-    """
-
-@app.get("/reset")
-def reset(task_id: int = 1):
-    obs = env.reset(task_id)
-    return obs.model_dump()
-
-@app.post("/step")
-def step(action: Action):
-    obs, reward, done, info = env.step(action)
-    return {
-        "observation": obs.model_dump(),
-        "reward": reward,
-        "done": done,
-        "info": info
-    }
-
-@app.get("/state")
-def state():
-    return env.state()
-
-@app.get("/baseline", response_class=HTMLResponse)
-def baseline():
-    import random
-
-    scores = []
-
-    categories = ["billing", "tech", "complaint"]
-    priorities = ["low", "medium", "high"]
-
-    for i in range(1, 4):
-        env.reset(i)
-
-        action = Action(
-            category=random.choice(categories),
-            priority=random.choice(priorities),
-            response="We are checking your issue, please wait.",
-            escalate=random.choice([True, False])
-        )
-
-        _, _, _, info = env.step(action)
-        scores.append(info["score"])
-
-    avg = sum(scores) / len(scores)
-
-    # 🎯 GRAPH VALUES
-    graph_data = ",".join(str(round(s,2)) for s in scores)
-
+# ================= COMMON STYLE =================
+def base_html(content):
     return f"""
     <html>
     <head>
         <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    </head>
-
-    <body style="background:#020617;color:white;text-align:center;padding:50px;font-family:sans-serif;">
-
-        <h1 style="color:#38bdf8;">📊 Baseline Performance</h1>
-        <h2>Average Score: {avg:.2f}</h2>
-
-        <canvas id="myChart" width="400" height="200"></canvas>
-
-        <script>
-            const ctx = document.getElementById('myChart');
-
-            new Chart(ctx, {{
-                type: 'bar',
-                data: {{
-                    labels: ["Task 1", "Task 2", "Task 3"],
-                    datasets: [{{
-                        label: 'Score',
-                        data: [{graph_data}],
-                        borderWidth: 1
-                    }}]
-                }},
-                options: {{
-                    scales: {{
-                        y: {{
-                            beginAtZero: true,
-                            max: 1
-                        }}
-                    }}
-                }}
-            }});
-        </script>
-
-        <br><br>
-        <a href="/" style="color:#38bdf8;">⬅ Back to Home</a>
-
-    </body>
-    </html>
-    """
-@app.get("/tasks", response_class=HTMLResponse)
-def get_tasks():
-    html = """
-    <html>
-    <body style="background:#020617;color:white;font-family:sans-serif;padding:40px;">
-    <h1 style="text-align:center;color:#38bdf8;">📋 Tasks</h1>
-    <div style="display:flex;flex-wrap:wrap;justify-content:center;">
-    """
-
-    for t in TASKS:
-        html += f"""
-        <div style="background:rgba(255,255,255,0.05);padding:20px;margin:15px;border-radius:10px;width:250px;">
-            <h3>Task {t['id']}</h3>
-            <p><b>Difficulty:</b> {t['difficulty']}</p>
-            <p>{t['ticket']}</p>
-        </div>
-        """
-
-    html += """
-    </div>
-    <div style="text-align:center;margin-top:20px;">
-        <a href="/" style="color:#38bdf8;">⬅ Back</a>
-    </div>
-    </body>
-    </html>
-    """
-
-    return html
-
-@app.get("/grader")
-def get_grader():
-    if env.current_task is None:
-        return {"error": "No task running"}
-
-    return {
-        "task_id": env.current_task["id"],
-        "expected": env.current_task["expected"]
-    }
-
-@app.get("/health", response_class=HTMLResponse)
-def health():
-    return """
-    <html>
-    <body style="background:#020617;color:white;text-align:center;padding:80px;font-family:sans-serif;">
-        <h1 style="color:#38bdf8;">✅ System Healthy</h1>
-        <p>All services are running perfectly 🚀</p>
-        <a href="/" style="color:#38bdf8;">⬅ Back to Home</a>
-    </body>
-    </html>
-    """
-
-@app.get("/run-demo", response_class=HTMLResponse)
-def run_demo():
-    import random
-
-    results = []
-
-    for i in range(1, 4):
-        obs = env.reset(i)
-
-        action = Action(
-            category=random.choice(["billing","tech","complaint"]),
-            priority=random.choice(["low","medium","high"]),
-            response="We are processing your request...",
-            escalate=random.choice([True, False])
-        )
-
-        _, _, _, info = env.step(action)
-
-        results.append({
-            "task_id": i,
-            "score": round(info["score"], 2)
-        })
-
-    avg = round(sum(r["score"] for r in results)/len(results), 2)
-
-    # 🎯 Cards HTML
-    cards = ""
-    for r in results:
-        cards += f"""
-        <div class="card">
-            <h3>Task {r['task_id']}</h3>
-            <p>Score: {r['score']}</p>
-        </div>
-        """
-
-    return f"""
-    <html>
-    <head>
         <style>
             body {{
+                margin:0;
+                font-family: 'Segoe UI', sans-serif;
                 background: linear-gradient(135deg,#020617,#0f172a);
-                color: white;
-                font-family: sans-serif;
-                text-align: center;
-                padding: 50px;
+                color:white;
             }}
 
-            h1 {{
-                color: #38bdf8;
+            .wave {{
+                position: fixed;
+                width:200%;
+                height:200%;
+                background: radial-gradient(circle, rgba(56,189,248,0.2), transparent 60%);
+                animation: wave 10s linear infinite;
+                z-index:0;
             }}
 
-            .cards {{
-                display: flex;
-                justify-content: center;
-                gap: 20px;
-                margin-top: 40px;
-                flex-wrap: wrap;
+            @keyframes wave {{
+                0% {{ transform: translate(-25%,-25%) rotate(0); }}
+                50% {{ transform: translate(-20%,-30%) rotate(180deg); }}
+                100% {{ transform: translate(-25%,-25%) rotate(360deg); }}
+            }}
+
+            .container {{
+                position:relative;
+                z-index:1;
+                text-align:center;
+                padding:60px;
             }}
 
             .card {{
                 background: rgba(255,255,255,0.05);
-                padding: 20px;
-                border-radius: 12px;
-                width: 200px;
-                transition: 0.3s;
+                padding:20px;
+                margin:10px;
+                border-radius:12px;
+                display:inline-block;
+                transition:0.3s;
             }}
 
             .card:hover {{
-                transform: translateY(-8px);
+                transform:translateY(-8px);
             }}
 
             a {{
-                color: #38bdf8;
-                display: inline-block;
-                margin-top: 30px;
+                color:#38bdf8;
+                text-decoration:none;
             }}
         </style>
     </head>
-
     <body>
-
-        <h1>🚀 Demo Results</h1>
-        <h2>Average Score: {avg}</h2>
-
-        <div class="cards">
-            {cards}
+        <div class="wave"></div>
+        <div class="container">
+            {content}
+            <br><br><a href="/">⬅ Back Home</a>
         </div>
-
-        <a href="/">⬅ Back to Home</a>
-
     </body>
     </html>
     """
+
+# ================= HOMEPAGE =================
+@app.get("/", response_class=HTMLResponse)
+def home():
+    return base_html("""
+        <h1>🚀 OpenEnv Ticket Routing AI</h1>
+        <p>AI-powered customer support simulation</p>
+
+        <div>
+            <a href="/docs">Docs</a> |
+            <a href="/tasks">Tasks</a> |
+            <a href="/baseline">Baseline</a> |
+            <a href="/health">Health</a> |
+            <a href="/run-demo">Run Demo</a>
+        </div>
+
+        <br>
+
+        <div class="card"><h3>⚙️ System</h3><p>Health + API</p></div>
+        <div class="card"><h3>📋 Tasks</h3><p>3 difficulty levels</p></div>
+        <div class="card"><h3>🤖 AI</h3><p>Scoring system</p></div>
+    """)
+
+# ================= HEALTH =================
+@app.get("/health", response_class=HTMLResponse)
+def health():
+    return base_html("""
+        <h1>✅ System Healthy</h1>
+        <p>All services are running smoothly</p>
+    """)
+
+# ================= TASKS =================
+@app.get("/tasks", response_class=HTMLResponse)
+def tasks():
+    cards = ""
+    for t in TASKS:
+        cards += f"""
+        <div class="card">
+            <h3>Task {t['id']}</h3>
+            <p>{t['ticket']}</p>
+            <p><b>{t['difficulty']}</b></p>
+        </div>
+        """
+    return base_html(f"<h1>📋 Tasks</h1>{cards}")
+
+# ================= BASELINE =================
+@app.get("/baseline", response_class=HTMLResponse)
+def baseline():
+    scores = []
+
+    for i in range(1, 4):
+        env.reset(i)
+        action = Action(
+            category=random.choice(["billing","tech","complaint"]),
+            priority=random.choice(["low","medium","high"]),
+            response="Processing...",
+            escalate=random.choice([True, False])
+        )
+        _, _, _, info = env.step(action)
+        scores.append(info["score"])
+
+    avg = sum(scores)/len(scores)
+    graph = ",".join(str(round(s,2)) for s in scores)
+
+    return base_html(f"""
+        <h1>📊 Baseline Score</h1>
+        <h2>{avg:.2f}</h2>
+        <canvas id="chart"></canvas>
+
+        <script>
+        new Chart(document.getElementById('chart'), {{
+            type:'bar',
+            data:{{labels:["T1","T2","T3"],datasets:[{{data:[{graph}]}}]}}
+        }});
+        </script>
+    """)
+
+# ================= DEMO =================
+@app.get("/run-demo", response_class=HTMLResponse)
+def run_demo():
+    results = []
+
+    for i in range(1, 4):
+        env.reset(i)
+        action = Action(
+            category=random.choice(["billing","tech","complaint"]),
+            priority=random.choice(["low","medium","high"]),
+            response="Processing...",
+            escalate=random.choice([True, False])
+        )
+        _, _, _, info = env.step(action)
+        results.append(info["score"])
+
+    avg = sum(results)/len(results)
+
+    cards = "".join([f"<div class='card'>Task {i+1}<br>{round(s,2)}</div>" for i,s in enumerate(results)])
+
+    return base_html(f"""
+        <h1>🚀 Demo Results</h1>
+        <h2>{avg:.2f}</h2>
+        {cards}
+    """)
+
+# ================= API =================
+@app.get("/reset")
+def reset(task_id: int = 1):
+    return env.reset(task_id).model_dump()
+
+@app.post("/step")
+def step(action: Action):
+    obs, reward, done, info = env.step(action)
+    return {"observation": obs.model_dump(), "reward": reward, "done": done, "info": info}
+
+@app.get("/state")
+def state():
+    return env.state()
