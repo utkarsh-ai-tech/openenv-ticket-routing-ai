@@ -144,7 +144,7 @@ def home():
                 height: 200%;
                 background: radial-gradient(circle, rgba(56,189,248,0.15), transparent 60%);
                 animation: waveMove 22s linear infinite;
-                opacity: 0.4;
+                opacity: 0.3;
                z-index: 0;
             }
 
