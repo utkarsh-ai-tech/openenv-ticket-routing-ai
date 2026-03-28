@@ -1,9 +1,9 @@
 
 ---
-title: openenv-ticket-routing-ai
-emoji: 🤖
+title: OpenEnv Ticket Routing AI
+emoji: 🚀
 colorFrom: blue
-colorTo: purple
+colorTo: indigo
 sdk: docker
 app_port: 7860
 pinned: false
