@@ -409,7 +409,7 @@ def shell(body: str, title: str = "OpenEnv") -> str:
 def home():
     return shell("""
     <div class="hero">
-      <div class="badge">HACKATHON EDITION · 2025</div>
+      <div class="badge"> -: WELCOME JUDGES :- </div>
       <h1 class="title">Ticket Routing<br>Intelligence</h1>
       <p class="subtitle">
         An open reinforcement-learning environment for training and evaluating
