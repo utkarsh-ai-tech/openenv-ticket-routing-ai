@@ -4,7 +4,6 @@ from pydantic import BaseModel
 from typing import Optional
 import random
 
-# ── bring in your own modules ──────────────────────────────────────────────
 from my_env.models import Action, Observation
 from my_env.tasks import TASKS
 from my_env.grader import grade
@@ -79,7 +78,6 @@ STYLE = """
   }
 
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
   html { scroll-behavior: smooth; }
 
   body {
@@ -90,7 +88,6 @@ STYLE = """
     overflow-x: hidden;
   }
 
-  /* ── grid background ── */
   body::before {
     content: '';
     position: fixed; inset: 0;
@@ -102,7 +99,6 @@ STYLE = """
     pointer-events: none;
   }
 
-  /* ── ambient glow ── */
   .glow {
     position: fixed;
     border-radius: 50%;
@@ -119,7 +115,6 @@ STYLE = """
     to   { transform: translate(60px, 40px); }
   }
 
-  /* ── top bar ── */
   .topbar {
     position: relative; z-index: 10;
     display: flex; align-items: center; justify-content: space-between;
@@ -146,7 +141,6 @@ STYLE = """
   }
   .topbar nav a:hover { color: var(--sky); }
 
-  /* ── page wrapper ── */
   .page {
     position: relative; z-index: 1;
     max-width: 1100px;
@@ -154,7 +148,6 @@ STYLE = """
     padding: 60px 24px 100px;
   }
 
-  /* ── hero ── */
   .hero { text-align: center; padding: 60px 0 40px; }
 
   .badge {
@@ -188,7 +181,6 @@ STYLE = """
     line-height: 1.6;
   }
 
-  /* ── nav pills ── */
   .nav-pills {
     display: flex; flex-wrap: wrap; justify-content: center;
     gap: 10px; margin-top: 36px;
@@ -216,7 +208,6 @@ STYLE = """
     box-shadow: 0 8px 24px rgba(56,189,248,.2);
   }
 
-  /* ── stat cards ── */
   .stat-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
@@ -241,7 +232,6 @@ STYLE = """
   .stat-card h3 { font-size: 13px; color: var(--sky); letter-spacing: .06em; margin-bottom: 6px; }
   .stat-card p  { font-size: 13px; color: var(--dim); line-height: 1.5; }
 
-  /* ── section title ── */
   .sec-title {
     font-size: 11px;
     font-family: 'Space Mono', monospace;
@@ -252,7 +242,6 @@ STYLE = """
     border-bottom: 1px solid var(--border);
   }
 
-  /* ── task card ── */
   .task-list { display: flex; flex-direction: column; gap: 14px; margin-top: 16px; }
 
   .task-card {
@@ -293,11 +282,7 @@ STYLE = """
   .diff-medium { background: rgba(251,191,36,.1);  color: var(--gold);  border: 1px solid rgba(251,191,36,.3); }
   .diff-hard   { background: rgba(248,113,113,.1); color: var(--red);   border: 1px solid rgba(248,113,113,.3); }
 
-  /* ── score block ── */
-  .score-hero {
-    text-align: center;
-    padding: 40px 0 24px;
-  }
+  .score-hero { text-align: center; padding: 40px 0 24px; }
 
   .score-num {
     font-family: 'Space Mono', monospace;
@@ -325,7 +310,6 @@ STYLE = """
 
   .bar-val { font-family: 'Space Mono', monospace; font-size: 11px; color: var(--sky2); width: 36px; text-align: right; }
 
-  /* ── result cards in demo ── */
   .result-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
@@ -346,7 +330,6 @@ STYLE = """
   .result-card .r-task { font-family: 'Space Mono', monospace; font-size: 11px; color: var(--dim); margin-bottom: 8px; }
   .result-card .r-score { font-size: 36px; font-weight: 800; color: var(--sky); }
 
-  /* ── health ── */
   .health-dot {
     display: inline-block;
     width: 10px; height: 10px;
@@ -360,7 +343,6 @@ STYLE = """
 
   .health-title { font-size: 28px; font-weight: 800; display: flex; align-items: center; justify-content: center; }
 
-  /* ── footer ── */
   .footer {
     text-align: center;
     padding: 40px 0 0;
@@ -370,7 +352,6 @@ STYLE = """
     letter-spacing: .06em;
   }
 
-  /* ── back link ── */
   .back {
     display: inline-flex; align-items: center; gap: 6px;
     font-family: 'Space Mono', monospace;
@@ -495,7 +476,7 @@ def health():
 def tasks():
     items = ""
     for t in TASKS:
-        diff  = t.get("difficulty", "medium").lower()
+        diff = t.get("difficulty", "medium").lower()
         items += f"""
         <div class="task-card">
           <span class="task-id">T{t['id']}</span>
@@ -596,7 +577,7 @@ def run_demo():
 
 
 # ══════════════════════════════════════════════════════════════════════════
-#  API ENDPOINTS  (these are what the OpenEnv evaluator calls)
+#  API ENDPOINTS
 # ══════════════════════════════════════════════════════════════════════════
 
 @app.get("/reset")
@@ -605,7 +586,7 @@ def reset_get(task_id: int = 1):
     return obs.model_dump()
 
 
-@app.post("/reset")                         
+@app.post("/reset")
 def reset_post(data: ResetRequest):
     obs = env.reset(data.task_id)
     return obs.model_dump()
