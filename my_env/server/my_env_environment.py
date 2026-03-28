@@ -363,9 +363,17 @@ def run_demo():
     """)
 
 # ================= API =================
+from fastapi import Body
+
 @app.get("/reset")
-def reset(task_id: int = 1):
-    return env.reset(task_id).model_dump()
+def reset_get(task_id: int = 1):
+    obs = env.reset(task_id)
+    return obs.model_dump()
+
+@app.post("/reset")
+def reset_post(task_id: int = Body(default=1)):
+    obs = env.reset(task_id)
+    return obs.model_dump()
 
 @app.post("/step")
 def step(action: Action):
