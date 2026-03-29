@@ -1,0 +1,10 @@
+[project]
+name = "openenv-ticket-routing-ai"
+version = "1.0.0"
+description = "OpenEnv Ticket Routing AI"
+requires-python = ">=3.10"
+
+[tool.uvicorn]
+app = "inference:app"
+host = "0.0.0.0"
+port = 7860
