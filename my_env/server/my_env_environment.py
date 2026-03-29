@@ -1,4 +1,4 @@
-from fastapi import FastAPI, Body
+from fastapi import FastAPI, Body, Request
 from fastapi.responses import HTMLResponse
 from pydantic import BaseModel
 from typing import Optional
@@ -63,7 +63,6 @@ env = MyEnv()
 STYLE = """
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;700;800&display=swap');
-
   :root {
     --bg0:   #03070f;
     --bg1:   #080f1e;
@@ -76,10 +75,8 @@ STYLE = """
     --green: #4ade80;
     --gold:  #fbbf24;
   }
-
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
   html { scroll-behavior: smooth; }
-
   body {
     background: var(--bg0);
     color: #e2e8f0;
@@ -87,7 +84,6 @@ STYLE = """
     min-height: 100vh;
     overflow-x: hidden;
   }
-
   body::before {
     content: '';
     position: fixed; inset: 0;
@@ -98,7 +94,6 @@ STYLE = """
     z-index: 0;
     pointer-events: none;
   }
-
   .glow {
     position: fixed;
     border-radius: 50%;
@@ -109,12 +104,10 @@ STYLE = """
   }
   .glow-a { width:600px; height:600px; background:#0ea5e9; top:-200px; left:-200px; animation: drift 14s ease-in-out infinite alternate; }
   .glow-b { width:400px; height:400px; background:#6366f1; bottom:-150px; right:-100px; animation: drift 18s ease-in-out infinite alternate-reverse; }
-
   @keyframes drift {
     from { transform: translate(0,0); }
     to   { transform: translate(60px, 40px); }
   }
-
   .topbar {
     position: relative; z-index: 10;
     display: flex; align-items: center; justify-content: space-between;
@@ -123,14 +116,12 @@ STYLE = """
     background: rgba(3,7,15,.7);
     backdrop-filter: blur(14px);
   }
-
   .topbar .logo {
     font-family: 'Space Mono', monospace;
     font-size: 15px;
     color: var(--sky);
     letter-spacing: .08em;
   }
-
   .topbar nav a {
     font-size: 13px;
     color: var(--dim);
@@ -140,16 +131,13 @@ STYLE = """
     transition: color .2s;
   }
   .topbar nav a:hover { color: var(--sky); }
-
   .page {
     position: relative; z-index: 1;
     max-width: 1100px;
     margin: 0 auto;
     padding: 60px 24px 100px;
   }
-
   .hero { text-align: center; padding: 60px 0 40px; }
-
   .badge {
     display: inline-block;
     font-family: 'Space Mono', monospace;
@@ -162,7 +150,6 @@ STYLE = """
     padding: 4px 14px;
     margin-bottom: 20px;
   }
-
   h1.title {
     font-size: clamp(36px, 6vw, 72px);
     font-weight: 800;
@@ -171,7 +158,6 @@ STYLE = """
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
   }
-
   .subtitle {
     margin-top: 14px;
     color: var(--dim);
@@ -180,12 +166,10 @@ STYLE = """
     margin-inline: auto;
     line-height: 1.6;
   }
-
   .nav-pills {
     display: flex; flex-wrap: wrap; justify-content: center;
     gap: 10px; margin-top: 36px;
   }
-
   .nav-pills a {
     display: inline-flex; align-items: center; gap: 7px;
     font-family: 'Space Mono', monospace;
@@ -199,7 +183,6 @@ STYLE = """
     backdrop-filter: blur(6px);
     transition: all .25s;
   }
-
   .nav-pills a:hover {
     background: rgba(56,189,248,.12);
     border-color: var(--sky);
@@ -207,14 +190,12 @@ STYLE = """
     transform: translateY(-3px);
     box-shadow: 0 8px 24px rgba(56,189,248,.2);
   }
-
   .stat-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
     gap: 16px;
     margin-top: 56px;
   }
-
   .stat-card {
     background: var(--panel);
     border: 1px solid var(--border);
@@ -222,16 +203,13 @@ STYLE = """
     padding: 24px 20px;
     transition: transform .3s, box-shadow .3s;
   }
-
   .stat-card:hover {
     transform: translateY(-6px);
     box-shadow: 0 16px 40px rgba(56,189,248,.1);
   }
-
   .stat-card .icon { font-size: 26px; margin-bottom: 10px; }
   .stat-card h3 { font-size: 13px; color: var(--sky); letter-spacing: .06em; margin-bottom: 6px; }
   .stat-card p  { font-size: 13px; color: var(--dim); line-height: 1.5; }
-
   .sec-title {
     font-size: 11px;
     font-family: 'Space Mono', monospace;
@@ -241,9 +219,7 @@ STYLE = """
     padding-bottom: 10px;
     border-bottom: 1px solid var(--border);
   }
-
   .task-list { display: flex; flex-direction: column; gap: 14px; margin-top: 16px; }
-
   .task-card {
     background: var(--panel);
     border: 1px solid var(--border);
@@ -252,9 +228,7 @@ STYLE = """
     display: flex; align-items: flex-start; gap: 18px;
     transition: box-shadow .25s;
   }
-
   .task-card:hover { box-shadow: 0 0 0 1px var(--sky); }
-
   .task-id {
     font-family: 'Space Mono', monospace;
     font-size: 11px;
@@ -265,10 +239,8 @@ STYLE = """
     white-space: nowrap;
     flex-shrink: 0;
   }
-
   .task-body { flex: 1; }
   .task-body .ticket { font-size: 14px; color: #cbd5e1; line-height: 1.55; }
-
   .diff-badge {
     display: inline-block;
     font-family: 'Space Mono', monospace;
@@ -281,9 +253,7 @@ STYLE = """
   .diff-easy   { background: rgba(74,222,128,.12); color: var(--green); border: 1px solid rgba(74,222,128,.3); }
   .diff-medium { background: rgba(251,191,36,.1);  color: var(--gold);  border: 1px solid rgba(251,191,36,.3); }
   .diff-hard   { background: rgba(248,113,113,.1); color: var(--red);   border: 1px solid rgba(248,113,113,.3); }
-
   .score-hero { text-align: center; padding: 40px 0 24px; }
-
   .score-num {
     font-family: 'Space Mono', monospace;
     font-size: clamp(56px, 10vw, 96px);
@@ -291,11 +261,8 @@ STYLE = """
     text-shadow: 0 0 40px rgba(56,189,248,.5);
     line-height: 1;
   }
-
   .score-label { font-size: 13px; color: var(--dim); margin-top: 6px; }
-
   .bar-grid { display: flex; flex-direction: column; gap: 14px; margin-top: 28px; }
-
   .bar-row { display: flex; align-items: center; gap: 14px; }
   .bar-row .lbl { font-family: 'Space Mono', monospace; font-size: 11px; color: var(--dim); width: 32px; }
   .bar-track { flex: 1; height: 10px; background: rgba(255,255,255,.06); border-radius: 99px; overflow: hidden; }
@@ -307,16 +274,13 @@ STYLE = """
     animation: grow .8s cubic-bezier(.22,1,.36,1) both;
   }
   @keyframes grow { from { width: 0 !important; } }
-
   .bar-val { font-family: 'Space Mono', monospace; font-size: 11px; color: var(--sky2); width: 36px; text-align: right; }
-
   .result-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
     gap: 14px;
     margin-top: 28px;
   }
-
   .result-card {
     background: var(--panel);
     border: 1px solid var(--border);
@@ -325,11 +289,9 @@ STYLE = """
     text-align: center;
     transition: transform .3s;
   }
-
   .result-card:hover { transform: translateY(-5px); box-shadow: 0 12px 32px rgba(56,189,248,.12); }
   .result-card .r-task { font-family: 'Space Mono', monospace; font-size: 11px; color: var(--dim); margin-bottom: 8px; }
   .result-card .r-score { font-size: 36px; font-weight: 800; color: var(--sky); }
-
   .health-dot {
     display: inline-block;
     width: 10px; height: 10px;
@@ -340,9 +302,7 @@ STYLE = """
     margin-right: 8px;
   }
   @keyframes pulse { 0%,100% { opacity:1; } 50% { opacity:.4; } }
-
   .health-title { font-size: 28px; font-weight: 800; display: flex; align-items: center; justify-content: center; }
-
   .footer {
     text-align: center;
     padding: 40px 0 0;
@@ -351,7 +311,6 @@ STYLE = """
     color: var(--dim);
     letter-spacing: .06em;
   }
-
   .back {
     display: inline-flex; align-items: center; gap: 6px;
     font-family: 'Space Mono', monospace;
@@ -423,7 +382,6 @@ def home():
         <a href="/run-demo">⚡ Run Demo</a>
       </div>
     </div>
-
     <div class="stat-grid">
       <div class="stat-card">
         <div class="icon">⚙️</div>
@@ -446,7 +404,6 @@ def home():
         <p>Full <code>reset → step → reward</code> loop compatible with any RL framework.</p>
       </div>
     </div>
-
     <div class="footer">Built with ❤️ by Utkarsh</div>
     """, "Home")
 
@@ -587,8 +544,13 @@ def reset_get(task_id: int = 1):
 
 
 @app.post("/reset")
-def reset_post(data: ResetRequest):
-    obs = env.reset(data.task_id)
+async def reset_post(request: Request):
+    try:
+        body = await request.json()
+        task_id = body.get("task_id", 1)
+    except:
+        task_id = 1
+    obs = env.reset(task_id)
     return obs.model_dump()
 
 
