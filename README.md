@@ -51,13 +51,15 @@ Meaningful response
 Penalizes incorrect or poor actions
 
 🧪 4. Tasks (Difficulty Progression)
+
 Task	Difficulty	Description
 1	Easy	Billing issue (double charge)
 2	Medium	Technical issue (app crash)
 3	Hard	Emotional complaint with repeated failure
 ✔ Tasks increase in complexity and require better reasoning.
 
-⚙️ 5. API Endpoints
+⚙️ 5. API 
+
 Endpoint	Method	Description
 /reset	GET	Start a new task
 /step	POST	Take an action
@@ -73,6 +75,12 @@ cd ticket-routing-env
 Step 2: Install Dependencies
 pip install fastapi uvicorn pydantic requests
 Step 3: Start Server
+uvicorn my_env.server.my_env_environment:app --reload
+Step 4: Open in Browser
+http://127.0.0.1:8000/docs
+👉 Use Swagger UI to test endpoints interactively.
+
+
 uvicorn my_env.server.my_env_environment:app --reload
 Step 4: Open in Browser
 http://127.0.0.1:8000/docs
